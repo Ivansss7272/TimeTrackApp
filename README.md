@@ -1,1 +1,1 @@
-# TimeTrackApp
+TimeTrackApp is a Python-based controller designed to efficiently manage time-tracking tasks. It enables users to create tasks with a title, start and stop times, and automatically calculates the task's duration. Users can retrieve all tasks, with an option to filter them by date, update task details, and delete tasks using task IDs. The application ensures robust validation of task times and comprehensive error handling across functionalities, offering a streamlined experience for time management.
