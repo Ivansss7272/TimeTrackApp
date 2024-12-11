@@ -1,32 +1,30 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel, validator, ValidationError
 
-class Task(BaseModel):
+class TaskEntry(BaseModel):
     title: str
-    start_time: datetime
-    stop_time: datetime = None
+    start_datetime: datetime
+    end_datetime: datetime = None
     
     @property
-    def duration(self):
-        try:
-            if self.stop_time:
-                return self.stop_time - self.start_time
-        except TypeError as e:
-            print(f"Error calculating duration: {e}")
+    def elapsed_time(self):
+        if self.end_datetime:
+            return self.end_datetime - self.start_datetime
         return None
     
-    @validator('stop_time')
-    def validate_times(cls, v, values, **kwargs):
-        try:
-            if 'start_time' in values and v is not None and v < values['start_time']:
-                raise ValueError("stop_time must be after start_time")
-        except ValueError as e:
-            print(f"Validation Error: {e}")
-            raise  
-        return v
+    @validator('end_datetime')
+    def end_after_start(cls, value, values, **kwargs):
+        if 'start_datetime' in values and value is not None and value < values['start_datetime']:
+            raise ValueError("end_datetime must be later than start_datetime")
+        return value
 
 if __name__ == "__main__":
     try:
-        task = Task(title="New Task", start_time=datetime.now(), stop_time=datetime.now() - datetime.timedelta(hours=1))
+        current_time = datetime.now()
+        task_entry = TaskEntry(
+            title="New Task", 
+            start_datetime=current_time, 
+            end_datetime=current_time - timedelta(hours=1)
+        )
     except ValidationError as e:
-        print(f"Task creation failed: {e}")
+        print(f"Task entry creation failed: {e}")
